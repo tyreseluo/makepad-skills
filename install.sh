@@ -1,12 +1,12 @@
 #!/bin/bash
 #
 # Makepad Skills Installer
-# https://github.com/project-robius/makepad-skills
+# https://github.com/ZhangHanDong/makepad-skills
 #
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/project-robius/makepad-skills/main/install.sh | bash
-#   curl -fsSL https://raw.githubusercontent.com/project-robius/makepad-skills/main/install.sh | bash -s -- --with-hooks
-#   curl -fsSL https://raw.githubusercontent.com/project-robius/makepad-skills/main/install.sh | bash -s -- --target /path/to/project
+#   curl -fsSL https://raw.githubusercontent.com/ZhangHanDong/makepad-skills/main/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/ZhangHanDong/makepad-skills/main/install.sh | bash -s -- --with-hooks
+#   curl -fsSL https://raw.githubusercontent.com/ZhangHanDong/makepad-skills/main/install.sh | bash -s -- --target /path/to/project
 #
 
 set -e
@@ -19,7 +19,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Default values
-REPO_URL="https://github.com/project-robius/makepad-skills"
+REPO_URL="https://github.com/ZhangHanDong/makepad-skills"
 BRANCH="main"
 TARGET_DIR=""
 WITH_HOOKS=false

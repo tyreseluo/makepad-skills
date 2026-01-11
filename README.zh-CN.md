@@ -33,13 +33,13 @@
 
 ```bash
 # 安装到当前项目
-curl -fsSL https://raw.githubusercontent.com/project-robius/makepad-skills/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/ZhangHanDong/makepad-skills/main/install.sh | bash
 
 # 安装并启用 hooks
-curl -fsSL https://raw.githubusercontent.com/project-robius/makepad-skills/main/install.sh | bash -s -- --with-hooks
+curl -fsSL https://raw.githubusercontent.com/ZhangHanDong/makepad-skills/main/install.sh | bash -s -- --with-hooks
 
 # 安装到指定项目
-curl -fsSL https://raw.githubusercontent.com/project-robius/makepad-skills/main/install.sh | bash -s -- --target /path/to/project
+curl -fsSL https://raw.githubusercontent.com/ZhangHanDong/makepad-skills/main/install.sh | bash -s -- --target /path/to/project
 ```
 
 **脚本特性：**
@@ -62,7 +62,7 @@ curl -fsSL https://raw.githubusercontent.com/project-robius/makepad-skills/main/
 
 ```bash
 # 克隆此仓库
-git clone https://github.com/project-robius/makepad-skills.git
+git clone https://github.com/ZhangHanDong/makepad-skills.git
 
 # 复制到你的项目
 cp -r makepad-skills/skills your-project/.claude/skills

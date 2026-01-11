@@ -33,13 +33,13 @@ Use the install script for one-command setup:
 
 ```bash
 # Install to current project
-curl -fsSL https://raw.githubusercontent.com/project-robius/makepad-skills/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/ZhangHanDong/makepad-skills/main/install.sh | bash
 
 # Install with hooks enabled
-curl -fsSL https://raw.githubusercontent.com/project-robius/makepad-skills/main/install.sh | bash -s -- --with-hooks
+curl -fsSL https://raw.githubusercontent.com/ZhangHanDong/makepad-skills/main/install.sh | bash -s -- --with-hooks
 
 # Install to specific project
-curl -fsSL https://raw.githubusercontent.com/project-robius/makepad-skills/main/install.sh | bash -s -- --target /path/to/project
+curl -fsSL https://raw.githubusercontent.com/ZhangHanDong/makepad-skills/main/install.sh | bash -s -- --target /path/to/project
 ```
 
 **Script features:**
@@ -62,7 +62,7 @@ curl -fsSL https://raw.githubusercontent.com/project-robius/makepad-skills/main/
 
 ```bash
 # Clone this repo
-git clone https://github.com/project-robius/makepad-skills.git
+git clone https://github.com/ZhangHanDong/makepad-skills.git
 
 # Copy to your project
 cp -r makepad-skills/skills your-project/.claude/skills

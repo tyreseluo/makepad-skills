@@ -33,13 +33,13 @@ Rust の [Makepad](https://github.com/makepad/makepad) フレームワークを�
 
 ```bash
 # 現在のプロジェクトにインストール
-curl -fsSL https://raw.githubusercontent.com/project-robius/makepad-skills/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/ZhangHanDong/makepad-skills/main/install.sh | bash
 
 # hooks を有効にしてインストール
-curl -fsSL https://raw.githubusercontent.com/project-robius/makepad-skills/main/install.sh | bash -s -- --with-hooks
+curl -fsSL https://raw.githubusercontent.com/ZhangHanDong/makepad-skills/main/install.sh | bash -s -- --with-hooks
 
 # 特定のプロジェクトにインストール
-curl -fsSL https://raw.githubusercontent.com/project-robius/makepad-skills/main/install.sh | bash -s -- --target /path/to/project
+curl -fsSL https://raw.githubusercontent.com/ZhangHanDong/makepad-skills/main/install.sh | bash -s -- --target /path/to/project
 ```
 
 **スクリプト機能：**
@@ -62,7 +62,7 @@ curl -fsSL https://raw.githubusercontent.com/project-robius/makepad-skills/main/
 
 ```bash
 # このリポジトリをクローン
-git clone https://github.com/project-robius/makepad-skills.git
+git clone https://github.com/ZhangHanDong/makepad-skills.git
 
 # プロジェクトにコピー
 cp -r makepad-skills/skills your-project/.claude/skills
