@@ -353,6 +353,53 @@ for action in &actions {
 - **Multiple geometries**: Each DrawMesh needs unique GeometryFingerprint via instance_id
 - **Shader compilation**: Geometry must exist at after_apply time (use default cube)
 - **Transform updates**: Call `after_apply_update_self` after geometry changes
+- **Mat4 as instance data**: Use 4×Vec4 columns instead of direct Mat4 (see below)
+
+## GPU-Side Transforms (Performance Critical)
+
+Instead of CPU-transforming vertices each frame, pass the transform matrix to the GPU:
+
+**Problem**: `#[calc] transform: Mat4` causes Metal shader compilation errors.
+
+**Solution**: Decompose Mat4 into 4 Vec4 columns:
+
+```rust
+#[derive(Live, LiveRegister)]
+#[repr(C)]
+pub struct DrawMesh {
+    // ... other fields ...
+    #[calc] pub transform_col0: Vec4,
+    #[calc] pub transform_col1: Vec4,
+    #[calc] pub transform_col2: Vec4,
+    #[calc] pub transform_col3: Vec4,
+}
+
+impl DrawMesh {
+    pub fn set_transform(&mut self, transform: Mat4) {
+        // Mat4.v is column-major: v[0..4] = col0, etc.
+        self.transform_col0 = vec4(transform.v[0], transform.v[1], transform.v[2], transform.v[3]);
+        self.transform_col1 = vec4(transform.v[4], transform.v[5], transform.v[6], transform.v[7]);
+        self.transform_col2 = vec4(transform.v[8], transform.v[9], transform.v[10], transform.v[11]);
+        self.transform_col3 = vec4(transform.v[12], transform.v[13], transform.v[14], transform.v[15]);
+    }
+}
+```
+
+**Shader reconstructs mat4**:
+```rust
+fn vertex(self) -> vec4 {
+    let transform = mat4(
+        self.transform_col0,
+        self.transform_col1,
+        self.transform_col2,
+        self.transform_col3
+    );
+    let world_pos = transform * vec4(self.geom_pos, 1.0);
+    // ... rest of vertex shader
+}
+```
+
+**Performance gain**: 13MB/frame → 64 bytes/frame for robot with 364k vertices
 
 ## References
 

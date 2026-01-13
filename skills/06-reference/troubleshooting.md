@@ -227,6 +227,143 @@ THEME_FONT_CODE      // Monospace for code
 
 ---
 
+<!-- Evolution: 2026-01-13 | source: flex-layout-demo | author: filetree-pattern -->
+### Empty Font Family Warning (Text Not Rendering)
+
+```
+WARNING: encountered empty font family
+WARNING: encountered empty font family
+```
+
+**Symptom**: Text doesn't render at all, only showing blank space. Multiple "empty font family" warnings in console.
+
+**Cause**: Custom text styles defined with inline `{}` don't have `font_family` defined. The font_family is required for text rendering.
+
+**Fix**: Always inherit from a theme font that includes `font_family`:
+
+```rust
+// WRONG - text_style without font_family, text won't render
+TEXT_SMALL = {
+    font_size: 10.0
+}
+
+<Label> {
+    draw_text: {
+        text_style: <TEXT_SMALL> {}  // ❌ No font_family, text invisible
+    }
+}
+
+// CORRECT - inherit from THEME_FONT_REGULAR which has font_family
+TEXT_SMALL = <THEME_FONT_REGULAR> {
+    font_size: 10.0
+}
+
+<Label> {
+    draw_text: {
+        text_style: <TEXT_SMALL> {}  // ✅ Inherits font_family from theme
+    }
+}
+```
+
+**Note**: This commonly affects FileTree text, custom Labels, and any widget using custom text styles.
+
+---
+
+<!-- Evolution: 2026-01-13 | source: flex-layout-demo | author: filetree-pattern -->
+### FileTree Content Not Displaying
+
+**Symptom**: FileTree widget renders (takes up space, shows scroll bars) but no folders or files appear despite calling `begin_folder()`, `file()`, and `end_folder()`.
+
+**Cause**: FileTree requires a data structure to back the tree content. Simply calling draw methods in `draw_walk` without a data structure doesn't work because:
+1. `begin_folder` checks `open_nodes.contains(&node_id)` - folder must be in open_nodes to show children
+2. The draw loop body only executes once per draw cycle
+3. Data must exist before draw is called
+
+**Fix**: Follow the DemoFileTree pattern from makepad ui_zoo:
+
+```rust
+// 1. Define node structures
+#[derive(Debug)]
+pub struct FileEdge {
+    pub name: String,
+    pub file_node_id: LiveId,
+}
+
+#[derive(Debug)]
+pub struct FileNode {
+    pub name: String,
+    pub child_edges: Option<Vec<FileEdge>>,  // None = file, Some = folder
+}
+
+// 2. Use #[wrap] #[live] pattern with data storage
+#[derive(Live, LiveHook, Widget)]
+pub struct MyFileTree {
+    #[wrap]
+    #[live]
+    pub file_tree: FileTree,
+
+    #[rust]
+    pub file_nodes: LiveIdMap<LiveId, FileNode>,
+
+    #[rust]
+    initialized: bool,
+}
+
+// 3. Initialize data on first draw (not Event::Startup)
+impl Widget for MyFileTree {
+    fn draw_walk(&mut self, cx: &mut Cx2d, scope: &mut Scope, walk: Walk) -> DrawStep {
+        // Initialize on first draw - more reliable than Event::Startup
+        if !self.initialized {
+            self.init_demo_data();
+            self.initialized = true;
+        }
+
+        while self.file_tree.draw_walk(cx, scope, walk).is_step() {
+            // Open root folder
+            self.file_tree.set_folder_is_open(cx, live_id!(root).into(), true, Animate::No);
+            // Recursively draw from data structure
+            Self::draw_file_node(cx, live_id!(root).into(), &mut self.file_tree, &self.file_nodes);
+        }
+        DrawStep::done()
+    }
+
+    fn handle_event(&mut self, cx: &mut Cx, event: &Event, scope: &mut Scope) {
+        self.file_tree.handle_event(cx, event, scope);
+    }
+}
+
+// 4. Recursive draw function
+impl MyFileTree {
+    fn draw_file_node(cx: &mut Cx2d, node_id: LiveId, file_tree: &mut FileTree,
+                      file_nodes: &LiveIdMap<LiveId, FileNode>) {
+        if let Some(node) = file_nodes.get(&node_id) {
+            match &node.child_edges {
+                Some(children) => {
+                    if file_tree.begin_folder(cx, node_id, &node.name).is_ok() {
+                        for child in children {
+                            Self::draw_file_node(cx, child.file_node_id, file_tree, file_nodes);
+                        }
+                        file_tree.end_folder();
+                    }
+                }
+                None => {
+                    file_tree.file(cx, node_id, &node.name);
+                }
+            }
+        }
+    }
+}
+```
+
+**Key Points**:
+- Use `#[wrap] #[live]` on the FileTree field, not `#[deref]`
+- Store tree data in `LiveIdMap<LiveId, FileNode>`
+- Initialize data on first draw, not Event::Startup (draw may happen before Startup)
+- Call `set_folder_is_open` inside the while loop
+- Use recursive function to draw from data structure
+
+---
+
 ### Button Invalid Properties
 
 ```
@@ -409,6 +546,59 @@ padding: 16
 ---
 
 ## Shader Issues
+
+<!-- Evolution: 2026-01-13 | source: mofa-studio | author: audio-dropdown-icon -->
+### Sdf2d `arc` Method Not Found
+
+**Error**: `method 'arc' is not defined on type Sdf2d`
+
+**Cause**: Sdf2d doesn't have an `arc` method for drawing arc shapes.
+
+**Fix**: Use available SDF primitives like `circle`, `box`, `rect`:
+```rust
+// WRONG - arc doesn't exist
+fn pixel(self) -> vec4 {
+    let sdf = Sdf2d::viewport(self.pos * self.rect_size);
+    sdf.arc(c.x, c.y, radius, start_angle, end_angle, thickness);  // ❌ Error
+    return sdf.result;
+}
+
+// CORRECT - use circles with stroke for curved shapes
+fn pixel(self) -> vec4 {
+    let sdf = Sdf2d::viewport(self.pos * self.rect_size);
+    sdf.circle(c.x, c.y, radius);
+    sdf.stroke(color, 1.5);  // Creates ring/arc appearance
+    return sdf.result;
+}
+```
+
+**Available Sdf2d methods**: `box`, `rect`, `circle`, `hexagon`, `move_to`, `line_to`, `fill`, `stroke`, `clear`
+
+---
+
+<!-- Evolution: 2026-01-13 | source: mofa-studio | author: audio-dropdown-icon -->
+### abs_pos Wrong Value Type
+
+**Error**: `wrong value type. Prop: abs_pos primitive: Vec2f value: Object`
+
+**Cause**: Using object syntax `{x: 0, y: 0}` instead of `vec2()` function.
+
+**Fix**: Use `vec2(x, y)` format for Vec2 properties:
+```rust
+// WRONG - object syntax doesn't work for Vec2f
+my_widget = <View> {
+    abs_pos: {x: 0, y: 0}  // ❌ Error: wrong value type
+}
+
+// CORRECT - use vec2() function
+my_widget = <View> {
+    abs_pos: vec2(0.0, 0.0)  // ✅ Works
+}
+```
+
+**Note**: This applies to all Vec2 properties like `abs_pos`, `abs_size`, etc.
+
+---
 
 ### Instance Variable Not Updating
 
@@ -611,6 +801,128 @@ impl MatchEvent for App {
         // Timer callback
     }
 }
+```
+
+---
+
+### Drag Events Lost When Cursor Leaves Widget
+
+<!-- Evolution: 2025-01-13 | source: flex-layout-demo -->
+
+**Symptom**: Drag operation stops receiving events when cursor moves outside the original widget.
+
+**Cause**: `event.hits()` only matches when cursor is over the widget's area.
+
+**Fix**: Use `hits_with_capture_overload` to capture events during drag:
+```rust
+// Bad - loses events when cursor leaves widget
+match event.hits(cx, self.view.area()) {
+    Hit::FingerMove(fe) => {
+        // Only fires when cursor is over self.view
+    }
+    _ => {}
+}
+
+// Good - captures events even outside widget during drag
+match event.hits_with_capture_overload(
+    cx,
+    self.view.area(),
+    self.is_dragging  // true = capture all events
+) {
+    Hit::FingerMove(fe) => {
+        // Always fires during drag, regardless of cursor position
+    }
+    Hit::FingerUp(fe) => {
+        // Guaranteed to receive drop event
+        self.is_dragging = false;
+    }
+    _ => {}
+}
+```
+
+---
+
+### Platform Drag Not Working on macOS
+
+**Symptom**: `cx.start_dragging()` prints "Dragging string not implemented on macos yet".
+
+**Cause**: Platform drag API has limited implementation on macOS.
+
+**Fix**: Implement internal drag handling instead:
+```rust
+// Instead of platform drag
+// cx.start_dragging(items);  // Won't work on macOS
+
+// Use internal drag state + hits_with_capture_overload
+#[rust]
+dragging_item: Option<usize>,
+
+// Set state on drag start
+self.dragging_item = Some(item_id);
+
+// Handle with capture override
+match event.hits_with_capture_overload(
+    cx, self.view.area(),
+    self.dragging_item.is_some()
+) {
+    // ...
+}
+```
+
+See [Drag-Drop Reorder Pattern](../04-patterns/_base/18-drag-drop-reorder.md) for full implementation.
+
+---
+
+### Visual Updates Not Showing After Widget Changes
+
+**Symptom**: Called `apply_over()` or `set_text()` but UI doesn't update.
+
+**Cause**: Updates applied outside the draw phase may not take effect properly.
+
+**Fix**: Use deferred update pattern:
+```rust
+#[rust]
+needs_visual_update: bool,
+
+pub fn set_item_id(&mut self, cx: &mut Cx, id: usize) {
+    self.item_id = id;
+    self.needs_visual_update = true;  // Flag for later
+    self.view.redraw(cx);              // Schedule redraw
+}
+
+fn draw_walk(&mut self, cx: &mut Cx2d, scope: &mut Scope, walk: Walk) -> DrawStep {
+    // Apply updates in draw phase
+    if self.needs_visual_update {
+        self.needs_visual_update = false;
+        self.view.apply_over(cx, live! {
+            draw_bg: { color: (self.get_color()) }
+        });
+    }
+    self.view.draw_walk(cx, scope, walk)
+}
+```
+
+---
+
+### Hidden Widget Still Takes Space
+
+**Symptom**: `set_visible(false)` doesn't collapse the widget's space.
+
+**Cause**: Widget with `width: Fill` or `height: Fill` still participates in layout.
+
+**Fix**: Set size to 0 when hiding:
+```rust
+// Bad - still takes space
+self.view.view(id!(my_widget)).apply_over(cx, live! {
+    visible: false
+});
+
+// Good - truly collapses
+self.view.view(id!(my_widget)).apply_over(cx, live! {
+    visible: false
+    width: 0
+    height: 0
+});
 ```
 
 ---
@@ -845,6 +1157,58 @@ fn navigate_to(&mut self, cx: &mut Cx, screen: Screen) {
 
 ---
 
+## Shader Instance Data Issues
+
+### Mat4 as Instance Data Fails on Metal
+
+**Symptom**: Using `#[calc] pub transform: Mat4` causes Metal shader compilation errors:
+```
+error: expected ';' at end of declaration list
+    packed_float4 ds_transform 0;
+error: duplicate member 'ds_transform'
+```
+
+**Cause**: The shader compiler generates invalid Metal code when decomposing Mat4 into columns - field names like `ds_transform 0` instead of `ds_transform_0`.
+
+**Fix**: Manually decompose Mat4 into 4 Vec4 columns:
+
+```rust
+// Instead of:
+// #[calc] pub transform: Mat4,  // FAILS on Metal
+
+// Use 4 columns:
+#[calc] pub transform_col0: Vec4,
+#[calc] pub transform_col1: Vec4,
+#[calc] pub transform_col2: Vec4,
+#[calc] pub transform_col3: Vec4,
+
+// Set transform method:
+pub fn set_transform(&mut self, m: Mat4) {
+    self.transform_col0 = vec4(m.v[0], m.v[1], m.v[2], m.v[3]);
+    self.transform_col1 = vec4(m.v[4], m.v[5], m.v[6], m.v[7]);
+    self.transform_col2 = vec4(m.v[8], m.v[9], m.v[10], m.v[11]);
+    self.transform_col3 = vec4(m.v[12], m.v[13], m.v[14], m.v[15]);
+}
+```
+
+**In shader, reconstruct mat4:**
+```rust
+fn vertex(self) -> vec4 {
+    let transform = mat4(
+        self.transform_col0,
+        self.transform_col1,
+        self.transform_col2,
+        self.transform_col3
+    );
+    let world_pos = transform * vec4(self.geom_pos, 1.0);
+    // ...
+}
+```
+
+**Note**: Use `#[calc]` for computed instance data, not `#[live]`.
+
+---
+
 ## Widget Overlay Issues
 
 ### DropDown Popup Not Appearing (Z-Order Conflict)
@@ -929,7 +1293,8 @@ impl MatchEvent for App {
 | Missing argument | `set_text` needs `cx` | Add `cx` parameter |
 | Module not found | Wrong crate path | Use `makepad_widgets::` |
 | No matching field: font | Using `font:` property | Use `text_style: <THEME_FONT_*>{}` |
-| Empty font family | Missing text_style | Add `text_style: <THEME_FONT_REGULAR>{}` |
+| Empty font family | Missing font_family in text_style | Inherit from `THEME_FONT_REGULAR` not just inline `{}` |
+| FileTree no content | Missing data structure | Use `#[wrap] #[live]` pattern with LiveIdMap backing |
 | No matching field | Property doesn't exist | Check widget docs |
 | Borrow conflict | Mixed mutable/immutable | Separate borrow scopes |
 | UI not updating | Missing redraw | Call `redraw(cx)` |
@@ -946,3 +1311,4 @@ impl MatchEvent for App {
 | Modal invisible | Custom GPU drawing on top | set_visible(cx, false) on 3D view |
 | apply_over color no effect | Direct color on templates | Use instance variables in shader |
 | TextInput focus conflicts | Hidden inputs receiving events | Add visibility checks, clear selection |
+| Mat4 shader compile error | Metal field naming bug | Use 4×Vec4 columns, reconstruct in shader |
