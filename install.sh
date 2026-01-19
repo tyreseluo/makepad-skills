@@ -7,6 +7,7 @@
 #   curl -fsSL https://raw.githubusercontent.com/ZhangHanDong/makepad-skills/main/install.sh | bash
 #   curl -fsSL https://raw.githubusercontent.com/ZhangHanDong/makepad-skills/main/install.sh | bash -s -- --with-hooks
 #   curl -fsSL https://raw.githubusercontent.com/ZhangHanDong/makepad-skills/main/install.sh | bash -s -- --target /path/to/project
+#   curl -fsSL https://raw.githubusercontent.com/ZhangHanDong/makepad-skills/main/install.sh | bash -s -- --agent your_agent
 #
 
 set -e
@@ -23,6 +24,7 @@ REPO_URL="https://github.com/ZhangHanDong/makepad-skills"
 BRANCH="main"
 TARGET_DIR=""
 WITH_HOOKS=false
+TARGET_AGENT="claude-code"
 TEMP_DIR=""
 
 # Print colored message
@@ -36,7 +38,7 @@ print_banner() {
     echo ""
     echo -e "${BLUE}╔══════════════════════════════════════════════╗${NC}"
     echo -e "${BLUE}║${NC}      ${GREEN}Makepad Skills Installer v2.1.3${NC}         ${BLUE}║${NC}"
-    echo -e "${BLUE}║${NC}      Claude Code Skills for Makepad          ${BLUE}║${NC}"
+    echo -e "${BLUE}║${NC}      Agent Skills for Makepad                ${BLUE}║${NC}"
     echo -e "${BLUE}╚══════════════════════════════════════════════╝${NC}"
     echo ""
 }
@@ -47,7 +49,9 @@ usage() {
     echo ""
     echo "Options:"
     echo "  --target DIR      Install to specific directory (default: current directory)"
-    echo "  --with-hooks      Also install and configure hooks"
+    echo "  --with-hooks      Also install and configure hooks (Claude Code only)"
+    echo "  --agent AGENT     Set agent (default: claude-code)"
+    echo "  --list-agents     Show supported agents and exit"
     echo "  --branch BRANCH   Use specific branch (default: main)"
     echo "  --help            Show this help message"
     echo ""
@@ -61,6 +65,16 @@ usage() {
     echo "  # Install to specific project"
     echo "  $0 --target /path/to/my-makepad-project"
     echo ""
+    echo "  # Install for a specific agent"
+    echo "  $0 --agent your_agent"
+    echo ""
+}
+
+list_agents() {
+    echo "Supported agents:"
+    echo "  - claude-code (default)"
+    echo "  - codex"
+    echo "  - gemini"
 }
 
 # Parse arguments
@@ -73,6 +87,25 @@ parse_args() {
                 ;;
             --with-hooks)
                 WITH_HOOKS=true
+                shift
+                ;;
+            --agent)
+                if [[ -z "$2" ]]; then
+                    error "Missing value for --agent (codex|claude-code|gemini)"
+                fi
+                TARGET_AGENT="$2"
+                shift 2
+                ;;
+            --list-agents)
+                list_agents
+                exit 0
+                ;;
+            --codex)
+                TARGET_AGENT="codex"
+                shift
+                ;;
+            --claude|--claude-code)
+                TARGET_AGENT="claude-code"
                 shift
                 ;;
             --branch)
@@ -88,6 +121,45 @@ parse_args() {
                 ;;
         esac
     done
+}
+
+normalize_agent() {
+    case "$TARGET_AGENT" in
+        codex)
+            ;;
+        gemini)
+            ;;
+        claude|claude-code)
+            TARGET_AGENT="claude-code"
+            ;;
+        *)
+            error "Unknown agent: $TARGET_AGENT (expected codex, claude-code, or gemini)"
+            ;;
+    esac
+}
+
+agent_label() {
+    if [[ "$TARGET_AGENT" == "codex" ]]; then
+        echo "Codex"
+    elif [[ "$TARGET_AGENT" == "gemini" ]]; then
+        echo "Gemini CLI"
+    else
+        echo "Claude Code"
+    fi
+}
+
+skills_base_dir() {
+    if [[ "$TARGET_AGENT" == "codex" ]]; then
+        echo "$TARGET_DIR/.codex"
+    elif [[ "$TARGET_AGENT" == "gemini" ]]; then
+        echo "$TARGET_DIR/.gemini"
+    else
+        echo "$TARGET_DIR/.claude"
+    fi
+}
+
+skills_dir() {
+    echo "$(skills_base_dir)/skills"
 }
 
 # Check dependencies
@@ -163,12 +235,13 @@ download_skills() {
 
 # Install skills
 install_skills() {
-    local SKILLS_DIR="$TARGET_DIR/.claude/skills"
+    local SKILLS_DIR
+    SKILLS_DIR="$(skills_dir)"
 
-    info "Installing skills to $SKILLS_DIR..."
+    info "Installing skills for $(agent_label) to $SKILLS_DIR..."
 
-    # Create .claude directory if needed
-    mkdir -p "$TARGET_DIR/.claude"
+    # Create base directory if needed
+    mkdir -p "$(skills_base_dir)"
 
     # Backup existing skills if present
     if [[ -d "$SKILLS_DIR" ]]; then
@@ -189,7 +262,13 @@ install_hooks() {
         return
     fi
 
-    local SKILLS_DIR="$TARGET_DIR/.claude/skills"
+    if [[ "$TARGET_AGENT" != "claude-code" ]]; then
+        warn "Hooks are only supported in Claude Code. Skipping hook installation."
+        return
+    fi
+
+    local SKILLS_DIR
+    SKILLS_DIR="$(skills_dir)"
     local HOOKS_SRC="$SKILLS_DIR/99-evolution/hooks"
     local HOOKS_DST="$SKILLS_DIR/hooks"
 
@@ -212,13 +291,15 @@ install_hooks() {
 
 # Print summary
 print_summary() {
-    local SKILLS_DIR="$TARGET_DIR/.claude/skills"
+    local SKILLS_DIR
+    SKILLS_DIR="$(skills_dir)"
 
     echo ""
     echo -e "${GREEN}════════════════════════════════════════════════${NC}"
     echo -e "${GREEN}  Installation Complete!${NC}"
     echo -e "${GREEN}════════════════════════════════════════════════${NC}"
     echo ""
+    echo "  Agent: $(agent_label)"
     echo "  Skills installed to: $SKILLS_DIR"
     echo ""
     echo "  Structure:"
@@ -236,17 +317,32 @@ print_summary() {
     echo "  └── 99-evolution/        (Self-improvement)"
     echo ""
     echo "  Quick Start:"
-    echo "  1. Open your project with Claude Code"
-    echo "  2. Ask: \"Create a simple Makepad counter app\""
-    echo ""
-    if [[ "$WITH_HOOKS" == true ]]; then
-        echo -e "  ${YELLOW}Hooks are installed but need manual configuration.${NC}"
-        echo "  See the settings.json snippet above."
-        echo ""
+    if [[ "$TARGET_AGENT" == "codex" ]]; then
+        echo "  1. Open your project with Codex"
+        echo "  2. Ask: \"Create a simple Makepad counter app\""
+    elif [[ "$TARGET_AGENT" == "gemini" ]]; then
+        echo "  1. Open your project with Gemini CLI"
+        echo "  2. Ask: \"Create a simple Makepad counter app\""
     else
-        echo "  To enable auto-evolution hooks, run:"
-        echo "  curl -fsSL https://raw.githubusercontent.com/ZhangHanDong/makepad-skills/main/install.sh | bash -s -- --with-hooks --target $TARGET_DIR"
-        echo ""
+        echo "  1. Open your project with Claude Code"
+        echo "  2. Ask: \"Create a simple Makepad counter app\""
+    fi
+    echo ""
+    if [[ "$TARGET_AGENT" != "claude-code" ]]; then
+        if [[ "$WITH_HOOKS" == true ]]; then
+            echo -e "  ${YELLOW}Hooks are only supported in Claude Code.${NC}"
+            echo ""
+        fi
+    else
+        if [[ "$WITH_HOOKS" == true ]]; then
+            echo -e "  ${YELLOW}Hooks are installed but need manual configuration.${NC}"
+            echo "  See the settings.json snippet above."
+            echo ""
+        else
+            echo "  To enable auto-evolution hooks, run:"
+            echo "  curl -fsSL https://raw.githubusercontent.com/ZhangHanDong/makepad-skills/main/install.sh | bash -s -- --with-hooks --target $TARGET_DIR"
+            echo ""
+        fi
     fi
     echo "  Documentation: https://github.com/ZhangHanDong/makepad-skills"
     echo ""
@@ -256,6 +352,7 @@ print_summary() {
 main() {
     print_banner
     parse_args "$@"
+    normalize_agent
     check_deps
     determine_target
     download_skills

@@ -5,7 +5,7 @@
 [![Version](https://img.shields.io/badge/version-2.1.3-blue.svg)](./skills/.claude-plugin/plugin.json)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
 
-Rust の [Makepad](https://github.com/makepad/makepad) フレームワークを使用してクロスプラットフォーム UI アプリケーションを構築するための Claude Code Skills です。
+Rust の [Makepad](https://github.com/makepad/makepad) フレームワークを使用してクロスプラットフォーム UI アプリケーションを構築するための Agent Skills です。
 
 ## Makepad について
 
@@ -69,12 +69,21 @@ curl -fsSL https://raw.githubusercontent.com/ZhangHanDong/makepad-skills/main/in
 
 # 特定のプロジェクトにインストール
 curl -fsSL https://raw.githubusercontent.com/ZhangHanDong/makepad-skills/main/install.sh | bash -s -- --target /path/to/project
+
+# Codex 向けにインストール（.codex/skills）
+curl -fsSL https://raw.githubusercontent.com/ZhangHanDong/makepad-skills/main/install.sh | bash -s -- --agent codex
+
+# Gemini CLI 向けにインストール（.gemini/skills）
+curl -fsSL https://raw.githubusercontent.com/ZhangHanDong/makepad-skills/main/install.sh | bash -s -- --agent gemini
 ```
+
+Gemini CLI 補足: Skills は実験的機能です。必要に応じて `/settings` で `experimental.skills` を有効化してください。
 
 **スクリプト機能：**
 - Rust/Makepad プロジェクトを自動検出（Cargo.toml をチェック）
 - インストール前に既存の skills をバックアップ
-- `--with-hooks` で自己進化フックをコピーして設定
+- `--with-hooks` で自己進化フックをコピーして設定（Claude Code のみ）
+- `--agent codex|claude-code|gemini` で Codex、Claude Code、または Gemini CLI を選択（デフォルト: claude-code）
 - `--target` で任意のプロジェクトディレクトリにインストール可能
 - カラー出力で進捗を明確に表示
 
@@ -83,7 +92,8 @@ curl -fsSL https://raw.githubusercontent.com/ZhangHanDong/makepad-skills/main/in
 | オプション | 説明 |
 |-----------|------|
 | `--target DIR` | 特定のディレクトリにインストール（デフォルト：現在のディレクトリ） |
-| `--with-hooks` | 自己進化フックを有効化 |
+| `--with-hooks` | 自己進化フックを有効化（Claude Code のみ） |
+| `--agent AGENT` | エージェント指定: `codex`、`claude-code`、または `gemini`（デフォルト: `claude-code`） |
 | `--branch NAME` | 特定のブランチを使用（デフォルト：main） |
 | `--help` | ヘルプメッセージを表示 |
 
@@ -93,11 +103,17 @@ curl -fsSL https://raw.githubusercontent.com/ZhangHanDong/makepad-skills/main/in
 # このリポジトリをクローン
 git clone https://github.com/ZhangHanDong/makepad-skills.git
 
-# プロジェクトにコピー
+# プロジェクトにコピー（https://code.claude.com/docs/en/skills）
 cp -r makepad-skills/skills your-project/.claude/skills
+
+# Codex プロジェクトにコピー（https://developers.openai.com/codex/skills）
+cp -r makepad-skills/skills your-project/.codex/skills
+
+# Gemini CLI プロジェクトにコピー（https://geminicli.com/docs/cli/skills/）
+cp -r makepad-skills/skills your-project/.gemini/skills
 ```
 
-インストール後のプロジェクト構造：
+インストール後のプロジェクト構造（Codex/Gemini は `.claude` を `.codex`/`.gemini` に置き換えてください）：
 
 ```
 your-project/

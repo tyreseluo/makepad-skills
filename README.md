@@ -1,11 +1,11 @@
-# Claude Skills for Makepad
+# Agent Skills for Makepad
 
 [English](./README.md) | [中文](./README.zh-CN.md) | [日本語](./README.ja.md)
 
 [![Version](https://img.shields.io/badge/version-2.1.3-blue.svg)](./skills/.claude-plugin/plugin.json)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
 
-Claude Code skills for building cross-platform UI applications with the [Makepad](https://github.com/makepad/makepad) framework in Rust.
+Agent skills for building cross-platform UI applications with the [Makepad](https://github.com/makepad/makepad) framework in Rust.
 
 ## About Makepad
 
@@ -69,12 +69,21 @@ curl -fsSL https://raw.githubusercontent.com/ZhangHanDong/makepad-skills/main/in
 
 # Install to specific project
 curl -fsSL https://raw.githubusercontent.com/ZhangHanDong/makepad-skills/main/install.sh | bash -s -- --target /path/to/project
+
+# Install for Codex (.codex/skills)
+curl -fsSL https://raw.githubusercontent.com/ZhangHanDong/makepad-skills/main/install.sh | bash -s -- --agent codex
+
+# Install for Gemini CLI (.gemini/skills)
+curl -fsSL https://raw.githubusercontent.com/ZhangHanDong/makepad-skills/main/install.sh | bash -s -- --agent gemini
 ```
+
+Gemini CLI note: Skills are experimental. Enable `experimental.skills` in `/settings` if needed.
 
 **Script features:**
 - Auto-detects Rust/Makepad projects (checks for Cargo.toml)
 - Backs up existing skills before installation
-- `--with-hooks` copies and configures self-evolution hooks
+- `--with-hooks` copies and configures self-evolution hooks (Claude Code only)
+- `--agent codex|claude-code|gemini` chooses Codex, Claude Code, or Gemini CLI (default: claude-code)
 - `--target` allows installing to any project directory
 - Colored output with clear progress indicators
 
@@ -83,7 +92,8 @@ curl -fsSL https://raw.githubusercontent.com/ZhangHanDong/makepad-skills/main/in
 | Option | Description |
 |--------|-------------|
 | `--target DIR` | Install to specific directory (default: current) |
-| `--with-hooks` | Enable self-evolution hooks |
+| `--with-hooks` | Enable self-evolution hooks (Claude Code only) |
+| `--agent AGENT` | Set agent: `codex`, `claude-code`, or `gemini` (default: `claude-code`) |
 | `--branch NAME` | Use specific branch (default: main) |
 | `--help` | Show help message |
 
@@ -93,11 +103,17 @@ curl -fsSL https://raw.githubusercontent.com/ZhangHanDong/makepad-skills/main/in
 # Clone this repo
 git clone https://github.com/ZhangHanDong/makepad-skills.git
 
-# Copy to your project
+# Copy to your project (https://code.claude.com/docs/en/skills)
 cp -r makepad-skills/skills your-project/.claude/skills
+
+# Copy to your project for Codex (https://developers.openai.com/codex/skills)
+cp -r makepad-skills/skills your-project/.codex/skills
+
+# Copy to your project for Gemini CLI (https://geminicli.com/docs/cli/skills/)
+cp -r makepad-skills/skills your-project/.gemini/skills
 ```
 
-Your project structure should look like:
+Your project structure should look like (use `.codex` or `.gemini` instead of `.claude`):
 
 ```
 your-project/

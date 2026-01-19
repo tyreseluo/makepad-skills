@@ -1,11 +1,11 @@
-# Makepad 的 Claude Skills
+# Makepad 的 Agent Skills
 
 [English](./README.md) | [中文](./README.zh-CN.md) | [日本語](./README.ja.md)
 
 [![Version](https://img.shields.io/badge/version-2.1.3-blue.svg)](./skills/.claude-plugin/plugin.json)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
 
-用于在 Rust 中使用 [Makepad](https://github.com/makepad/makepad) 框架构建跨平台 UI 应用的 Claude Code Skills。
+用于在 Rust 中使用 [Makepad](https://github.com/makepad/makepad) 框架构建跨平台 UI 应用的 Agent Skills。
 
 ## 关于 Makepad
 
@@ -69,12 +69,23 @@ curl -fsSL https://raw.githubusercontent.com/ZhangHanDong/makepad-skills/main/in
 
 # 安装到指定项目
 curl -fsSL https://raw.githubusercontent.com/ZhangHanDong/makepad-skills/main/install.sh | bash -s -- --target /path/to/project
+
+# --agent 不指定默认为: claude
+
+# 安装到 Codex（.codex/skills）
+curl -fsSL https://raw.githubusercontent.com/ZhangHanDong/makepad-skills/main/install.sh | bash -s -- --agent codex
+
+# 安装到 Gemini CLI（.gemini/skills）
+curl -fsSL https://raw.githubusercontent.com/ZhangHanDong/makepad-skills/main/install.sh | bash -s -- --agent gemini
 ```
+
+Gemini CLI 说明：Skills 目前为实验性功能，如需使用请在 `/settings` 中启用 `experimental.skills`。
 
 **脚本特性：**
 - 自动检测 Rust/Makepad 项目（检查 Cargo.toml）
 - 安装前自动备份已有 skills
-- `--with-hooks` 复制并配置自我进化 hooks
+- `--with-hooks` 复制并配置自我进化 hooks（仅 Claude Code）
+- `--agent codex|claude-code|gemini` 选择 Codex、Claude Code 或 Gemini CLI（默认：claude-code）
 - `--target` 支持安装到任意项目目录
 - 彩色输出，清晰的进度提示
 
@@ -83,7 +94,8 @@ curl -fsSL https://raw.githubusercontent.com/ZhangHanDong/makepad-skills/main/in
 | 选项 | 说明 |
 |------|------|
 | `--target DIR` | 安装到指定目录（默认：当前目录） |
-| `--with-hooks` | 启用自我进化 hooks |
+| `--with-hooks` | 启用自我进化 hooks（仅 Claude Code） |
+| `--agent AGENT` | 设置Agent：`codex`、`claude-code` 或 `gemini`（默认：`claude-code`） |
 | `--branch NAME` | 使用指定分支（默认：main） |
 | `--help` | 显示帮助信息 |
 
@@ -93,11 +105,17 @@ curl -fsSL https://raw.githubusercontent.com/ZhangHanDong/makepad-skills/main/in
 # 克隆此仓库
 git clone https://github.com/ZhangHanDong/makepad-skills.git
 
-# 复制到你的项目
+# 复制到你的项目（https://code.claude.com/docs/en/skills）
 cp -r makepad-skills/skills your-project/.claude/skills
+
+# 复制到 Codex 项目（https://developers.openai.com/codex/skills）
+cp -r makepad-skills/skills your-project/.codex/skills
+
+# 复制到 Gemini CLI 项目（https://geminicli.com/docs/cli/skills/）
+cp -r makepad-skills/skills your-project/.gemini/skills
 ```
 
-安装后的项目结构：
+安装后的项目结构（Codex/Gemini 请将 `.claude` 替换为 `.codex`/`.gemini`）：
 
 ```
 your-project/
