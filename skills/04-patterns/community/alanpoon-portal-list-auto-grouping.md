@@ -89,12 +89,14 @@ impl Widget for FoldButtonWithText {
 - Standard `View`: Static children defined in live_design!
 - `ViewList`: Dynamic children set via `set_view_list()` at runtime
 
+**Similar Pattern**: ViewList implements a pattern similar to [04-list-template.md](../_base/04-list-template.md), which demonstrates dynamic list rendering with templates.
+
 ```rust
 use makepad_widgets::*;
 
 #[derive(Live, LiveHook, Widget)]
 pub struct ViewList {
-    #[live] pub content: Option<LivePtr>,  // Template for items
+    #[live] content: Option<LivePtr>,  // Template for items
     #[walk] walk: Walk,
     #[layout] layout: Layout,
     #[rust] view_list: Vec<View>,          // Runtime view instances
