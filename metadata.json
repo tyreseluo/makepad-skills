@@ -1,20 +1,23 @@
 {
   "name": "makepad-skills",
-  "version": "1.0.0",
-  "description": "Comprehensive Makepad, Robius, and MolyKit skills for Claude",
+  "version": "2.0.0",
+  "description": "Comprehensive Makepad, Robius, and MolyKit skills for Claude with auto-triggering",
   "author": "makepad-skills contributors",
   "license": "MIT",
-  "repository": "",
+  "repository": "https://github.com/ZhangHanDong/makepad-skills",
 
   "stats": {
-    "makepad_skills": 10,
+    "makepad_skills": 11,
     "robius_skills": 5,
     "molykit_skills": 1,
     "extended_skills": 3,
-    "total_skills": 19
+    "total_skills": 20
   },
 
   "skills": {
+    "router": [
+      "makepad-router"
+    ],
     "makepad": [
       "makepad-basics",
       "makepad-dsl",
@@ -80,7 +83,7 @@
     "rust_edition": "2024"
   },
 
-  "last_updated": "2026-01-20",
+  "last_updated": "2026-01-21",
   "quality_checks": {
     "skill_frontmatter": true,
     "llms_txt_present": true,
