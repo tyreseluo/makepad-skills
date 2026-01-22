@@ -1,145 +1,18 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "makepad-skills",
-  "displayName": "Makepad Skills",
   "version": "2.0.0",
-  "description": "Comprehensive Makepad UI framework assistant with auto-routing, widget patterns, shaders, animations, and production-ready Robius patterns from Robrix/Moly codebases",
-  "categories": ["programming", "rust", "ui-framework", "development"],
-  "tags": [
-    "makepad",
-    "rust",
-    "ui",
-    "gui",
-    "cross-platform",
-    "shader",
-    "widget",
-    "live-design",
-    "animation",
-    "robius",
-    "robrix",
-    "moly",
-    "tokio",
-    "async",
-    "mobile",
-    "desktop",
-    "wasm",
-    "android",
-    "ios"
-  ],
-  "repository": "https://github.com/ZhangHanDong/makepad-skills",
-  "homepage": "https://github.com/ZhangHanDong/makepad-skills",
-  "author": {
+  "description": "Comprehensive Makepad UI framework assistant with auto-routing, widget patterns, shaders, animations, and production-ready Robius patterns from Robrix/Moly codebases. 20 skills covering basics, DSL, layout, widgets, events, animation, shaders, platform, font, splash, and Robius patterns.",
+  "owner": {
     "name": "ZhangHanDong",
     "email": "makepad-skills@example.com"
   },
-  "license": "MIT",
-  "minClaudeCodeVersion": "1.0.0",
-  "skills": [
+  "plugins": [
     {
-      "name": "makepad-router",
-      "path": "skills/makepad-router/SKILL.md",
-      "description": "Master router for ALL Makepad/Robius questions with 50+ trigger keywords"
-    },
-    {
-      "name": "makepad-basics",
-      "path": "skills/makepad-basics/SKILL.md",
-      "description": "Getting started, app structure, live_design!, app_main!"
-    },
-    {
-      "name": "makepad-dsl",
-      "path": "skills/makepad-dsl/SKILL.md",
-      "description": "DSL syntax, inheritance, prototypes"
-    },
-    {
-      "name": "makepad-layout",
-      "path": "skills/makepad-layout/SKILL.md",
-      "description": "Layout system: Flow, Walk, Size, padding, margin, align"
-    },
-    {
-      "name": "makepad-widgets",
-      "path": "skills/makepad-widgets/SKILL.md",
-      "description": "Widget components: View, Button, Label, Image, TextInput, Markdown, Html"
-    },
-    {
-      "name": "makepad-event-action",
-      "path": "skills/makepad-event-action/SKILL.md",
-      "description": "Event handling: Hit, FingerDown, KeyDown, handle_event"
-    },
-    {
-      "name": "makepad-animation",
-      "path": "skills/makepad-animation/SKILL.md",
-      "description": "Animation system: Animator, states, transitions, easing"
-    },
-    {
-      "name": "makepad-shaders",
-      "path": "skills/makepad-shaders/SKILL.md",
-      "description": "Shader system: Sdf2d, draw_bg, gradients, shadows, effects"
-    },
-    {
-      "name": "makepad-platform",
-      "path": "skills/makepad-platform/SKILL.md",
-      "description": "Cross-platform support: macOS, Windows, Linux, Android, iOS, WASM"
-    },
-    {
-      "name": "makepad-font",
-      "path": "skills/makepad-font/SKILL.md",
-      "description": "Font and typography: text_style, font_size, glyphs"
-    },
-    {
-      "name": "makepad-splash",
-      "path": "skills/makepad-splash/SKILL.md",
-      "description": "Splash scripting language for dynamic UI"
-    },
-    {
-      "name": "robius-app-architecture",
-      "path": "skills/robius-app-architecture/SKILL.md",
-      "description": "App architecture patterns: Tokio async, SignalToUI, worker tasks"
-    },
-    {
-      "name": "robius-widget-patterns",
-      "path": "skills/robius-widget-patterns/SKILL.md",
-      "description": "Widget patterns: apply_over, modal, collapsible, drag-drop, pageflip"
-    },
-    {
-      "name": "robius-event-action",
-      "path": "skills/robius-event-action/SKILL.md",
-      "description": "Custom actions: MatchEvent, post_action, cx.widget_action"
-    },
-    {
-      "name": "robius-state-management",
-      "path": "skills/robius-state-management/SKILL.md",
-      "description": "State management: AppState, persistence, theme switching"
-    },
-    {
-      "name": "robius-matrix-integration",
-      "path": "skills/robius-matrix-integration/SKILL.md",
-      "description": "Matrix SDK integration: sliding sync, timeline, MatrixRequest"
-    },
-    {
-      "name": "molykit",
-      "path": "skills/molykit/SKILL.md",
-      "description": "AI chat toolkit: BotClient, SSE streaming, cross-platform async"
-    },
-    {
-      "name": "makepad-deployment",
-      "path": "skills/makepad-deployment/SKILL.md",
-      "description": "Build and packaging: APK, IPA, WASM, cargo-makepad"
-    },
-    {
-      "name": "makepad-reference",
-      "path": "skills/makepad-reference/SKILL.md",
-      "description": "Troubleshooting, API docs, code quality guidelines"
-    },
-    {
-      "name": "evolution",
-      "path": "skills/evolution/SKILL.md",
-      "description": "Self-evolution: contribute patterns, hooks system, templates"
+      "name": "makepad-skills",
+      "description": "20 skills for Makepad UI framework: basics, DSL, layout, widgets, events, animation, shaders, platform, font, splash, Robius patterns (app-architecture, widget-patterns, event-action, state-management, matrix-integration), MolyKit, deployment, reference, and evolution",
+      "source": ".",
+      "category": "development"
     }
-  ],
-  "hooks": {
-    "directory": ".claude/hooks",
-    "settings": ".claude/settings.json"
-  },
-  "featured": true,
-  "verified": false
+  ]
 }
