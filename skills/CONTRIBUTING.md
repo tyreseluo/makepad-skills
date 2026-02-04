@@ -83,7 +83,16 @@ Examples:
 
 **Template**: Copy from `evolution/templates/troubleshooting-template.md`
 
-### 4. Hooks
+### 4. Deployment Examples
+
+Add CI/CD packaging examples to `makepad-deployment/community/`.
+
+**File naming**: `{descriptive-example-name}.md` (NO GitHub handle in filename)
+
+Include YAML frontmatter and a concise, runnable snippet. If the example is
+adapted from another repo, add a `source` link.
+
+### 5. Hooks
 
 Add hooks to `evolution/hooks/`:
 

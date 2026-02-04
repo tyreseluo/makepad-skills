@@ -400,6 +400,7 @@ cargo makepad android install-toolchain --full-ndk
 
 - `references/platform-troubleshooting.md` - Platform-specific deployment issues
 - `references/makepad-packaging-action.md` - GitHub Actions packaging reference
+- `community/dora-studio-package-workflow.md` - Dora Studio CI packaging example
 
 ## External References
 
