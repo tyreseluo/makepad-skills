@@ -65,6 +65,7 @@
     ],
     "extended": [
       "deployment", "android", "iOS", "WASM", "packaging",
+      "GitHub Actions", "CI", "action", "marketplace", "release",
       "troubleshooting", "error", "code quality", "adaptive layout",
       "self-evolution", "hooks", "templates", "contribution"
     ]
@@ -83,7 +84,7 @@
     "rust_edition": "2024"
   },
 
-  "last_updated": "2026-01-21",
+  "last_updated": "2026-02-04",
   "quality_checks": {
     "skill_frontmatter": true,
     "llms_txt_present": true,

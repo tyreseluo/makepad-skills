@@ -4,7 +4,8 @@ description: |
   CRITICAL: Use for Makepad packaging and deployment. Triggers on:
   deploy, package, APK, IPA, 打包, 部署,
   cargo-packager, cargo-makepad, WASM, Android, iOS,
-  distribution, installer, .deb, .dmg, .nsis
+  distribution, installer, .deb, .dmg, .nsis,
+  GitHub Actions, CI, action, marketplace
 ---
 
 # Makepad Packaging & Deployment
@@ -19,8 +20,34 @@ This skill covers packaging Makepad applications for all supported platforms.
 | [Android](#android) | `cargo-makepad` | .apk |
 | [iOS](#ios) | `cargo-makepad` | .app, .ipa |
 | [Web](#wasm-packaging) | `cargo-makepad` | Wasm + HTML/JS |
+| [CI/CD](#github-actions-packaging) | `makepad-packaging-action` | GitHub Release assets |
 
 ---
+
+## GitHub Actions Packaging
+
+Use `makepad-packaging-action` to package Makepad apps in CI. It wraps
+`cargo-packager` (desktop) and `cargo-makepad` (mobile), and can upload artifacts
+to GitHub Releases.
+
+```yaml
+jobs:
+  package:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Project-Robius-China/makepad-packaging-action@v1
+        with:
+          args: --target x86_64-unknown-linux-gnu --release
+```
+
+Notes:
+- Desktop packages must run on matching OS runners (Linux/Windows/macOS).
+- iOS builds require macOS runners.
+- Android builds can run on any OS runner.
+
+Full inputs/env/outputs and release workflows live in
+`references/makepad-packaging-action.md`.
 
 ## Desktop Packaging
 
@@ -32,8 +59,8 @@ Desktop packaging uses `cargo-packager` with `robius-packaging-commands` for res
 # Install cargo-packager
 cargo install cargo-packager --locked
 
-# Install robius-packaging-commands (v0.2.0)
-cargo install --version 0.2.0 --locked \
+# Install robius-packaging-commands (v0.2.1)
+cargo install --version 0.2.1 --locked \
     --git https://github.com/project-robius/robius-packaging-commands.git \
     robius-packaging-commands
 ```
@@ -332,8 +359,9 @@ appdata_paths = ["$LOCALAPPDATA/$PRODUCTNAME"]
 | Task | Command |
 |------|---------|
 | Install desktop packager | `cargo install cargo-packager --locked` |
-| Install resource helper | `cargo install --version 0.2.0 --locked --git https://github.com/project-robius/robius-packaging-commands.git robius-packaging-commands` |
+| Install resource helper | `cargo install --version 0.2.1 --locked --git https://github.com/project-robius/robius-packaging-commands.git robius-packaging-commands` |
 | Install mobile packager | `cargo install --force --git https://github.com/makepad/makepad.git --branch dev cargo-makepad` |
+| GitHub Actions packaging | `uses: Project-Robius-China/makepad-packaging-action@v1` |
 | Package for Linux | `cargo packager --release` |
 | Package for Windows | `cargo packager --release --formats nsis` |
 | Package for macOS | `cargo packager --release` |
@@ -371,9 +399,11 @@ cargo makepad android install-toolchain --full-ndk
 ## Reference Files
 
 - `references/platform-troubleshooting.md` - Platform-specific deployment issues
+- `references/makepad-packaging-action.md` - GitHub Actions packaging reference
 
 ## External References
 
 - [cargo-packager docs](https://docs.crabnebula.dev/packager/)
 - [robius-packaging-commands](https://github.com/project-robius/robius-packaging-commands)
 - [cargo-makepad](https://github.com/makepad/makepad)
+- [makepad-packaging-action](https://github.com/marketplace/actions/makepad-packaging-action)
