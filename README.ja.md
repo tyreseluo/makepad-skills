@@ -2,7 +2,7 @@
 
 [English](./README.md) | [中文](./README.zh-CN.md) | [日本語](./README.ja.md)
 
-[![Version](https://img.shields.io/badge/version-2.1.3-blue.svg)](./skills/.claude-plugin/plugin.json)
+[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](./.claude-plugin/plugin.json)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
 
 Rust の [Makepad](https://github.com/makepad/makepad) フレームワークを使用してクロスプラットフォーム UI アプリケーションを構築するための Agent Skills です。
@@ -140,6 +140,22 @@ your-project/
 ```
 
 詳細は [Claude Code Skills 公式ドキュメント](https://docs.anthropic.com/en/docs/claude-code/skills) を参照してください。
+
+## GitHub Actions パッケージング
+
+Makepad Packaging Action を使って CI で Makepad アプリをパッケージングできます。内部で `cargo-packager`（デスクトップ）と `cargo-makepad`（モバイル）を実行し、GitHub Releases へのアップロードに対応します。
+
+Marketplace: [makepad-packaging-action](https://github.com/marketplace/actions/makepad-packaging-action)
+
+```yaml
+- uses: Project-Robius-China/makepad-packaging-action@v1
+  with:
+    args: --target x86_64-unknown-linux-gnu --release
+```
+
+注意：
+- デスクトップは対応 OS の runner が必要です。
+- iOS は macOS runner が必要です。
 
 ## アーキテクチャ：コラボレーション向けアトミック Skills
 

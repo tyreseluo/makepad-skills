@@ -158,6 +158,22 @@ your-project/
 
 See [Claude Code Skills documentation](https://docs.anthropic.com/en/docs/claude-code/skills) for more details.
 
+## GitHub Actions Packaging
+
+Use the Makepad Packaging Action to build and release Makepad apps in CI. It wraps `cargo-packager` (desktop) and `cargo-makepad` (mobile), and can upload artifacts to GitHub Releases.
+
+Marketplace: [makepad-packaging-action](https://github.com/marketplace/actions/makepad-packaging-action)
+
+```yaml
+- uses: Project-Robius-China/makepad-packaging-action@v1
+  with:
+    args: --target x86_64-unknown-linux-gnu --release
+```
+
+Notes:
+- Desktop packages must run on matching OS runners.
+- iOS builds require macOS runners.
+
 ## Architecture: Atomic Skills for Collaboration
 
 ### Why Atomic Structure?

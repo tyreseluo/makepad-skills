@@ -2,7 +2,7 @@
 
 [English](./README.md) | [中文](./README.zh-CN.md) | [日本語](./README.ja.md)
 
-[![Version](https://img.shields.io/badge/version-2.1.3-blue.svg)](./skills/.claude-plugin/plugin.json)
+[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](./.claude-plugin/plugin.json)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
 
 用于在 Rust 中使用 [Makepad](https://github.com/makepad/makepad) 框架构建跨平台 UI 应用的 Agent Skills。
@@ -142,6 +142,22 @@ your-project/
 ```
 
 更多详情请参阅 [Claude Code Skills 官方文档](https://docs.anthropic.com/en/docs/claude-code/skills)。
+
+## GitHub Actions 打包
+
+使用 Makepad Packaging Action 在 CI 中打包并发布 Makepad 应用。内部封装 `cargo-packager`（桌面）与 `cargo-makepad`（移动），并支持上传产物到 GitHub Releases。
+
+Marketplace: [makepad-packaging-action](https://github.com/marketplace/actions/makepad-packaging-action)
+
+```yaml
+- uses: Project-Robius-China/makepad-packaging-action@v1
+  with:
+    args: --target x86_64-unknown-linux-gnu --release
+```
+
+注意：
+- 桌面包必须在对应 OS runner 上构建。
+- iOS 需要 macOS runner。
 
 ## 架构：面向协作的原子化 Skills
 

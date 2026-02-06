@@ -28,7 +28,7 @@ sudo apt-get install -y \
 **Symptom**: `cargo packager` fails with resource errors
 
 **Checklist**:
-1. Verify `robius-packaging-commands` version is 0.2.0
+1. Verify `robius-packaging-commands` version is 0.2.1
 2. Ensure `before-packaging-command` path matches your binary name
 3. Check `./dist/resources/` exists after running the command
 
